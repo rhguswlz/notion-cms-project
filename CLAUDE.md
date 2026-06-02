@@ -2,6 +2,11 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Project Context
+
+- PRD 문서: @docs/PRD.md
+- 개발 로드맵: @docs/ROADMAP.md
+
 ## 프로젝트 개요
 
 Next.js 16.2.6 스타터 프로젝트로, shadcn/ui 컴포넌트 쇼케이스와 모던 랜딩 페이지를 포함합니다. React 19, TypeScript 5, Tailwind CSS v4를 사용합니다. **Next.js 16은 학습 데이터와 Breaking Changes가 있으므로** 새 코드 작성 전 반드시 `AGENTS.md`와 `node_modules/next/dist/docs/`를 확인하세요.

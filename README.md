@@ -1,154 +1,201 @@
-# Claude Next.js Starters
+# 미국주식 인사이트
 
-현대적인 웹 애플리케이션 개발을 위한 Next.js 스타터 템플릿입니다.
+> Notion을 CMS로 활용하는 미국주식 정보 블로그
 
-## 🎯 프로젝트 개요
+매일 업데이트되는 미국주식 핵심 정보를 Notion에서 작성하면 블로그에 자동으로 반영됩니다.
 
-이 프로젝트는 **Next.js 15 + React 19** 기반의 프로덕션 레벨 랜딩 페이지 스타터입니다. shadcn/ui 컴포넌트와 현대적인 개발 도구들을 통합하여 빠른 개발을 지원합니다.
+---
+
+## 📌 프로젝트 개요
+
+| 항목 | 내용 |
+|------|------|
+| **목적** | Notion CMS 기반 미국주식 정보 블로그 |
+| **CMS** | Notion API (`@notionhq/client`) |
+| **렌더링** | ISR — 1시간마다 자동 재검증 |
+| **배포** | Vercel |
+
+- 📄 [PRD 문서](./docs/PRD.md)
+- 🗺️ [개발 로드맵](./docs/ROADMAP.md)
+
+---
 
 ## 🛠 기술 스택
 
-### 핵심 프레임워크
-- **Next.js 15.x** — React 기반 풀스택 프레임워크 (App Router)
-- **React 19** — UI 라이브러리
-- **TypeScript 5** — 정적 타입 체킹
+| 분류 | 기술 | 버전 |
+|------|------|------|
+| 프레임워크 | Next.js (App Router) | 16.x |
+| 언어 | TypeScript (strict 모드) | ^5 |
+| CMS | Notion API | `@notionhq/client` |
+| 스타일링 | Tailwind CSS | ^4 |
+| UI 컴포넌트 | shadcn/ui | latest |
+| 아이콘 | Lucide React | latest |
+| 폼 검증 | React Hook Form + Zod | - |
+| 배포 | Vercel | - |
 
-### 스타일링 & UI
-- **Tailwind CSS 4** — 유틸리티 우선 CSS 프레임워크
-- **shadcn/ui** — Radix UI 기반 재사용 가능한 컴포넌트
-- **Lucide React** — 아이콘 라이브러리
-- **next-themes** — 라이트/다크모드 토글
-
-### 폼 & 검증
-- **React Hook Form 7** — 경량 폼 상태 관리
-- **Zod 4** — TypeScript 우선 스키마 검증
-
-### 개발 도구
-- **ESLint 9** — 코드 품질 검사
-- **PostCSS** — CSS 변환 및 최적화
+---
 
 ## ✨ 주요 기능
 
-- ✅ **반응형 디자인** — 모바일, 태블릿, 데스크톱 최적화
-- ✅ **다크모드 지원** — next-themes를 통한 테마 전환
-- ✅ **타입 안전성** — 전체 TypeScript 지원
-- ✅ **SEO 최적화** — Next.js 메타데이터 API
-- ✅ **폼 검증** — React Hook Form + Zod 통합
-- ✅ **성능 최적화** — Next.js 기본 최적화 (이미지, 폰트)
-- ✅ **컴포넌트 쇼케이스** — 미리 구성된 UI 컴포넌트
+- ✅ **글 목록 페이지** — 발행된 글을 최신순 그리드로 표시
+- ✅ **카테고리 필터** — URL 파라미터 기반 (`?category=시장동향`)
+- ✅ **제목/태그 검색** — 실시간 필터링 (debounce 적용)
+- 🔲 **글 상세 페이지** — Notion 블록 렌더링 (`/posts/[slug]`)
+- 🔲 **카테고리 전용 페이지** — (`/category/[name]`)
+- 🔲 **ISR 재검증 API** — Notion 웹훅 연동으로 즉시 갱신
+- 🔲 **SEO 최적화** — 동적 메타데이터, sitemap, robots.txt
+- 🔲 **Vercel 배포**
+
+---
 
 ## 📂 프로젝트 구조
 
 ```
-claude-nextjs-starters/
-├── app/                    # Next.js App Router
-│   ├── components/         # shadcn/ui 설치 컴포넌트
-│   ├── page.tsx            # 홈 페이지
-│   ├── layout.tsx          # 루트 레이아웃
-│   ├── globals.css         # Tailwind 스타일
-│   ├── error.tsx           # 에러 바운더리
-│   ├── loading.tsx         # 로딩 UI
-│   └── not-found.tsx       # 404 페이지
-├── components/             # 커스텀 React 컴포넌트
-│   ├── layout/             # Header, Footer
-│   ├── sections/           # 페이지 섹션 (Hero, Features, Stats, CTA)
-│   ├── showcase/           # 컴포넌트 데모
-│   └── ui/                 # 커스텀 UI 컴포넌트
-├── lib/                    # 유틸리티 & 헬퍼
-│   ├── utils.ts            # 범용 함수
-│   ├── constants.ts        # 설정 & 상수
-│   ├── validations.ts      # Zod 스키마
-│   └── component-showcase.ts
-├── hooks/                  # 커스텀 React 훅
-├── types/                  # TypeScript 타입 정의
-└── public/                 # 정적 파일
+notion-cms-project/
+├── app/
+│   ├── layout.tsx                    # 루트 레이아웃 (Providers, 폰트, 메타데이터)
+│   ├── page.tsx                      # 홈 — 글 목록, 카테고리 필터, 검색
+│   ├── posts/[slug]/
+│   │   ├── page.tsx                  # 글 상세 페이지
+│   │   └── loading.tsx               # 스켈레톤 로딩 UI
+│   ├── category/[name]/
+│   │   └── page.tsx                  # 카테고리별 글 목록
+│   ├── api/revalidate/
+│   │   └── route.ts                  # ISR 재검증 웹훅 API
+│   ├── globals.css                   # Tailwind v4 글로벌 스타일
+│   ├── error.tsx                     # 에러 바운더리
+│   ├── loading.tsx                   # 전역 로딩 UI
+│   └── not-found.tsx                 # 404 페이지
+├── components/
+│   ├── blog/
+│   │   ├── post-card.tsx             # 글 카드 (제목, 카테고리, 날짜, 태그)
+│   │   ├── post-list.tsx             # 글 목록 그리드
+│   │   ├── post-content.tsx          # Notion 블록 렌더러
+│   │   ├── category-filter.tsx       # 카테고리 탭 필터 (클라이언트)
+│   │   └── search-input.tsx          # 검색창 (클라이언트, debounce)
+│   ├── layout/
+│   │   ├── header.tsx                # 헤더 (네비게이션, 반응형 메뉴)
+│   │   ├── footer.tsx                # 푸터
+│   │   ├── page-container.tsx        # 페이지 콘텐츠 컨테이너
+│   │   └── section.tsx               # 섹션 래퍼
+│   └── ui/                           # shadcn/ui 컴포넌트
+├── lib/
+│   ├── notion.ts                     # Notion API 클라이언트 및 함수
+│   ├── constants.ts                  # SITE_CONFIG, CATEGORIES, ISR_REVALIDATE
+│   ├── validations.ts                # Zod 스키마 (searchSchema)
+│   └── utils.ts                      # cn() 클래스 병합 헬퍼
+├── types/
+│   └── index.ts                      # Post, Category, NotionBlock 타입
+├── hooks/
+│   └── use-mobile.ts                 # useIsMobile() 훅
+├── docs/
+│   ├── PRD.md                        # 제품 요구사항 문서
+│   └── ROADMAP.md                    # 개발 로드맵
+└── .env.example                      # 환경 변수 예시
 ```
 
-## 🚀 빠른 시작
+---
 
-### 1. 개발 서버 실행
+## ⚙️ 환경 변수 설정
+
+`.env.example`을 참고하여 `.env.local` 파일을 생성하세요.
+
+```bash
+# Notion Integration API 키
+NOTION_API_KEY=secret_xxxxxxxxxxxx
+
+# Notion 데이터베이스 ID
+NOTION_DATABASE_ID=xxxxxxxxxxxxxxxxxxxx
+
+# ISR 재검증 웹훅 시크릿 (선택)
+REVALIDATE_SECRET=your_secret_here
+```
+
+---
+
+## 🗄 Notion 데이터베이스 스키마
+
+Notion에서 아래 속성을 가진 데이터베이스를 생성하세요.
+
+| 속성명 | 타입 | 설명 | 필수 |
+|--------|------|------|------|
+| `Title` | `title` | 글 제목 | ✅ |
+| `Category` | `select` | 카테고리 | ✅ |
+| `Tags` | `multi_select` | 태그 목록 | - |
+| `Published` | `date` | 발행일 | ✅ |
+| `Status` | `select` | `초안` / `발행됨` | ✅ |
+
+> **참고:** `Status`가 `발행됨`인 글만 블로그에 노출됩니다.
+
+### 카테고리 목록
+
+`시장 동향` · `종목 분석` · `경제 지표` · `ETF 정보` · `실적 발표` · `투자 전략`
+
+---
+
+## 🚀 시작하기
+
+### 1. 의존성 설치
+
+```bash
+npm install
+```
+
+### 2. 환경 변수 설정
+
+```bash
+cp .env.example .env.local
+# .env.local에 NOTION_API_KEY, NOTION_DATABASE_ID 입력
+```
+
+### 3. Notion 연동
+
+1. [Notion Integrations](https://www.notion.so/my-integrations)에서 Integration 생성
+2. API 키를 `NOTION_API_KEY`에 설정
+3. 데이터베이스를 Integration에 공유 (데이터베이스 우상단 `···` → `연결` → Integration 선택)
+4. 데이터베이스 URL에서 ID 복사 → `NOTION_DATABASE_ID`에 설정
+
+### 4. 개발 서버 실행
+
 ```bash
 npm run dev
 ```
-[http://localhost:3000](http://localhost:3000) 에서 확인하세요.
 
-### 2. 코드 수정
-`app/page.tsx` 또는 `components/` 의 파일들을 수정하면 자동으로 리로드됩니다.
+[http://localhost:3000](http://localhost:3000)에서 확인하세요.
 
-### 3. 빌드 & 배포
-```bash
-npm run build    # 프로덕션 빌드
-npm start        # 빌드된 앱 실행
-npm run lint     # ESLint 검사
-```
+---
 
-## 📋 주요 명령어
+## 📋 개발 명령어
 
 | 명령어 | 설명 |
 |--------|------|
 | `npm run dev` | 개발 서버 시작 (hot reload) |
-| `npm run build` | 프로덕션 빌드 생성 |
+| `npm run build` | 프로덕션 빌드 |
 | `npm start` | 빌드된 앱 실행 |
-| `npm run lint` | ESLint로 코드 검사 |
+| `npm run lint` | ESLint 코드 검사 |
 
-## 🎨 스타일링
+---
 
-이 프로젝트는 **Tailwind CSS v4**를 사용하며, shadcn/ui 컴포넌트의 CSS 변수를 통해 일관된 디자인 토큰을 유지합니다.
+## 🌐 배포 (Vercel)
 
-- **색상 시스템**: CSS 변수 기반 (다크모드 지원)
-- **반응형**: Tailwind 브레이크포인트 활용
-- **커스터마이징**: `app/globals.css`에서 Tailwind 설정 가능
-
-## 🔧 설정
-
-### 사이트 정보
-`lib/constants.ts` 에서 사이트 메타데이터 수정:
-```typescript
-export const SITE_CONFIG = {
-  name: "Your Site Name",
-  description: "Your site description",
-  url: "https://yoursite.com",
-};
-```
-
-### 타입 정의
-`types/index.ts`에 공통 타입 정의:
-- `NavItem` — 네비게이션 항목
-- `FeatureItem` — 기능 항목
-- `StatItem` — 통계 항목
-- `SiteConfig` — 사이트 설정
-
-## 🌐 배포
-
-### Vercel (추천)
 ```bash
+# Vercel CLI 설치
 npm install -g vercel
+
+# 배포
 vercel
 ```
 
-### Docker
-```dockerfile
-FROM node:20-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run build
-EXPOSE 3000
-CMD ["npm", "start"]
-```
+Vercel 대시보드에서 환경 변수를 설정하세요:
+- `NOTION_API_KEY`
+- `NOTION_DATABASE_ID`
+- `REVALIDATE_SECRET`
 
-## 📚 추가 리소스
+---
 
+## 📚 참고 자료
+
+- [Notion API 공식 문서](https://developers.notion.com/)
 - [Next.js 공식 문서](https://nextjs.org/docs)
-- [React 문서](https://react.dev)
-- [Tailwind CSS 문서](https://tailwindcss.com)
 - [shadcn/ui 컴포넌트](https://ui.shadcn.com)
-
-## 🎓 주의사항
-
-이 프로젝트는 **Next.js 16.x**를 기반으로 하며, 이전 버전의 문서와는 차이가 있을 수 있습니다. 자세한 내용은 `AGENTS.md`를 참고하세요.
-
-## 📝 라이선스
-
-MIT
+- [Vercel 배포 가이드](https://vercel.com/docs)
